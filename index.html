@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Services Quiz</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .welcome-screen {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 50px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .quiz-container, .result-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #4ca1af, #2c3e50);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .welcome-screen p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4ca1af, #2c3e50);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            margin: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+        }
+        
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #4ca1af;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            text-align: left;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+        
+        .options {
+            margin-top: 15px;
+        }
+        
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .option:hover {
+            background-color: #d1e7ff;
+        }
+        
+        .option.selected {
+            background-color: #4ca1af;
+            color: white;
+        }
+        
+        .option.correct {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .option.incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #4ca1af, #2c3e50);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .result-container h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .score {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(to right, #4ca1af, #2c3e50);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 20px 0;
+        }
+        
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .welcome-screen {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .features {
+                flex-direction: column;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-icon">✍</div>
+            <h1>Web Services Knowledge Challenge</h1>
+            <p>Test your understanding of web services architectures, protocols, and best practices with this comprehensive quiz.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div>20 Questions</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⏱</div>
+                    <div>Instant Feedback</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📚</div>
+                    <div>Detailed Explanations</div>
+                </div>
+            </div>
+            
+            <button class="btn" id="startBtn">Begin Quiz</button>
+        </div>
+        
+        <!-- Quiz Container -->
+        <div class="quiz-container hidden" id="quizContainer">
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <div id="questionContainer"></div>
+            <button class="btn" id="nextBtn">Next Question</button>
+        </div>
+        
+        <!-- Result Container -->
+        <div class="result-container hidden" id="resultContainer">
+            <h2>Quiz Completed!</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div id="answersSummary"></div>
+            <button class="btn" id="restartBtn">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz questions and answers
+        const quizData = [
+            {
+                question: "Which protocol is commonly used to access Web Services?",
+                options: ["FTP", "SMTP", "HTTP", "SNMP"],
+                answer: "HTTP",
+                explanation: "HTTP (Hypertext Transfer Protocol) is the most common protocol used to access web services, especially for RESTful services."
+            },
+            {
+                question: "What does SOAP stand for in web services?",
+                options: ["Simple Object Access Protocol", "Service Oriented Architecture Protocol", "Standard Object Access Point", "Simple Oriented Access Protocol"],
+                answer: "Simple Object Access Protocol",
+                explanation: "SOAP stands for Simple Object Access Protocol, which is a protocol for exchanging structured information in web services."
+            },
+            {
+                question: "Which of these is NOT a characteristic of RESTful web services?",
+                options: ["Stateless", "Cacheable", "Client-Server architecture", "Requires SOAP"],
+                answer: "Requires SOAP",
+                explanation: "RESTful services don't require SOAP. They typically use HTTP methods (GET, POST, PUT, DELETE) and standard data formats like JSON or XML."
+            },
+            {
+                question: "What is the primary data format used in modern REST APIs?",
+                options: ["XML", "JSON", "CSV", "YAML"],
+                answer: "JSON",
+                explanation: "JSON (JavaScript Object Notation) has become the primary data format for modern REST APIs due to its lightweight nature and easy integration with JavaScript."
+            },
+            {
+                question: "What HTTP method is typically used to retrieve data in a REST API?",
+                options: ["POST", "GET", "PUT", "DELETE"],
+                answer: "GET",
+                explanation: "The GET method is used to retrieve data from a resource in REST APIs."
+            },
+            {
+                question: "Which of these is a benefit of using web services?",
+                options: ["Language independence", "Platform independence", "Both A and B", "Neither A nor B"],
+                answer: "Both A and B",
+                explanation: "Web services provide both language and platform independence, allowing different systems to communicate regardless of their implementation technologies."
+            },
+            {
+                question: "What does WSDL stand for in web services?",
+                options: ["Web Services Description Language", "Web System Definition Language", "Web Services Development Language", "Web System Design Language"],
+                answer: "Web Services Description Language",
+                explanation: "WSDL stands for Web Services Description Language, which is an XML format for describing network services."
+            },
+            {
+                question: "Which HTTP status code indicates success in a REST API request?",
+                options: ["200", "400", "404", "500"],
+                answer: "200",
+                explanation: "HTTP status code 200 indicates a successful request in REST APIs."
+            },
+            {
+                question: "What is the purpose of UDDI in web services?",
+                options: ["To describe services", "To discover services", "To transport messages", "To secure services"],
+                answer: "To discover services",
+                explanation: "UDDI (Universal Description, Discovery, and Integration) is a directory service where businesses can register and discover web services."
+            },
+            {
+                question: "Which HTTP method is idempotent in REST?",
+                options: ["POST", "GET", "PUT", "Both B and C"],
+                answer: "Both B and C",
+                explanation: "Both GET and PUT methods are idempotent in REST, meaning multiple identical requests should have the same effect as a single request."
+            },
+            {
+                question: "What does API stand for?",
+                options: ["Application Programming Interface", "Automated Programming Interface", "Application Process Integration", "Automated Process Integration"],
+                answer: "Application Programming Interface",
+                explanation: "API stands for Application Programming Interface, which defines how different software components should interact."
+            },
+            {
+                question: "Which of these is a common authentication method for web services?",
+                options: ["OAuth", "JWT", "Basic Auth", "All of the above"],
+                answer: "All of the above",
+                explanation: "OAuth, JWT (JSON Web Tokens), and Basic Auth are all common authentication methods used in web services."
+            },
+            {
+                question: "What is the main advantage of microservices architecture?",
+                options: ["Improved scalability", "Better fault isolation", "Technology diversity", "All of the above"],
+                answer: "All of the above",
+                explanation: "Microservices architecture offers improved scalability, better fault isolation, and allows for technology diversity across services."
+            },
+            {
+                question: "Which of these is NOT a standard HTTP method in REST?",
+                options: ["GET", "POST", "FETCH", "DELETE"],
+                answer: "FETCH",
+                explanation: "FETCH is not a standard HTTP method. The standard methods are GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, etc."
+            },
+            {
+                question: "What does CORS stand for in web services?",
+                options: ["Cross-Origin Resource Sharing", "Cross-Origin Request Security", "Common Origin Resource Sharing", "Common Origin Request Security"],
+                answer: "Cross-Origin Resource Sharing",
+                explanation: "CORS stands for Cross-Origin Resource Sharing, which is a mechanism that allows restricted resources on a web page to be requested from another domain."
+            },
+            {
+                question: "Which of these is a common tool for testing web services?",
+                options: ["Postman", "SoapUI", "cURL", "All of the above"],
+                answer: "All of the above",
+                explanation: "Postman, SoapUI, and cURL are all commonly used tools for testing web services."
+            },
+            {
+                question: "What is the purpose of API versioning?",
+                options: ["To maintain backward compatibility", "To introduce breaking changes", "To support multiple API versions simultaneously", "All of the above"],
+                answer: "All of the above",
+                explanation: "API versioning helps maintain backward compatibility, allows introducing breaking changes, and supports running multiple versions simultaneously."
+            },
+            {
+                question: "Which HTTP status code indicates 'Not Found'?",
+                options: ["200", "400", "404", "500"],
+                answer: "404",
+                explanation: "HTTP status code 404 indicates that the requested resource could not be found."
+            },
+            {
+                question: "What is GraphQL primarily used for?",
+                options: ["Database management", "API querying", "Server configuration", "Network security"],
+                answer: "API querying",
+                explanation: "GraphQL is a query language for APIs that allows clients to request exactly the data they need."
+            },
+            {
+                question: "Which of these is a common message queue protocol used in web services?",
+                options: ["AMQP", "SMTP", "HTTP", "FTP"],
+                answer: "AMQP",
+                explanation: "AMQP (Advanced Message Queuing Protocol) is a common protocol used for message-oriented middleware in web services architectures."
+            }
+        ];
+
+        // DOM elements
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const quizContainer = document.getElementById('quizContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const questionContainer = document.getElementById('questionContainer');
+        const progressBar = document.getElementById('progressBar');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const answersSummary = document.getElementById('answersSummary');
+        const startBtn = document.getElementById('startBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Quiz state variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let userAnswers = [];
+
+        // Initialize the quiz
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            showQuestion();
+        }
+
+        // Display current question
+        function showQuestion() {
+            const question = quizData[currentQuestionIndex];
+            const optionsHtml = question.options.map(option => 
+                `<div class="option" onclick="selectOption(this)">${option}</div>`
+            ).join('');
+
+            questionContainer.innerHTML = `
+                <div class="question">${currentQuestionIndex + 1}. ${question.question}</div>
+                <div class="options">${optionsHtml}</div>
+            `;
+
+            // Update progress bar
+            const progress = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Reset selected option
+            selectedOption = null;
+            nextBtn.disabled = true;
+        }
+
+        // Select an option
+        window.selectOption = function(element) {
+            // Deselect all options
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Select clicked option
+            element.classList.add('selected');
+            selectedOption = element.textContent;
+            nextBtn.disabled = false;
+        }
+
+        // Move to next question or show results
+        function nextQuestion() {
+            if (!selectedOption) return;
+
+            // Check if answer is correct
+            const question = quizData[currentQuestionIndex];
+            const isCorrect = selectedOption === question.answer;
+            
+            // Store user answer
+            userAnswers.push({
+                question: question.question,
+                userAnswer: selectedOption,
+                correctAnswer: question.answer,
+                isCorrect: isCorrect,
+                explanation: question.explanation
+            });
+
+            // Update score if correct
+            if (isCorrect) {
+                score++;
+            }
+
+            // Move to next question or show results
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Show quiz results
+        function showResults() {
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+
+            // Display score
+            scoreDisplay.textContent = `Your Score: ${score}/${quizData.length}`;
+
+            // Generate answers summary
+            let summaryHtml = '';
+            userAnswers.forEach((answer, index) => {
+                summaryHtml += `
+                    <div class="question">
+                        <strong>Question ${index + 1}:</strong> ${answer.question}
+                        <div class="${answer.isCorrect ? 'correct' : 'incorrect'}">
+                            Your answer: ${answer.userAnswer} 
+                            ${answer.isCorrect ? '✓' : `✗ (Correct: ${answer.correctAnswer})`}
+                        </div>
+                        <div class="explanation">
+                            <strong>Explanation:</strong> ${answer.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+
+            answersSummary.innerHTML = summaryHtml;
+        }
+
+        // Restart the quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            resultContainer.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+    </script>
+</body>
+</html>
